@@ -1,0 +1,62 @@
+<mujoco model="door">
+  <!-- 
+    Simple door with lever handle for door-opening task.
+    Include this in your scene.xml or create a new scene that includes both robot and door.
+    
+    The door has:
+    - A fixed frame attached to the world
+    - A door panel on a hinge joint (swings open)
+    - A lever handle that rotates downward when pressed
+    
+    Position the door within reach of the G1 robot's arms.
+  -->
+
+  <asset>
+    <material name="door_frame_mat" rgba="0.4 0.3 0.2 1"/>
+    <material name="door_panel_mat" rgba="0.6 0.5 0.35 1"/>
+    <material name="handle_mat" rgba="0.7 0.7 0.7 1" specular="0.8" shininess="0.5"/>
+  </asset>
+
+  <worldbody>
+    <!-- Door assembly positioned in front of the robot -->
+    <body name="door_frame" pos="0.6 0.0 0.0">
+      <!-- Door frame (fixed to world) -->
+      <!-- Left frame post -->
+      <geom name="frame_left" type="box" size="0.03 0.03 0.95" pos="0 -0.4 0.95" 
+            material="door_frame_mat"/>
+      <!-- Right frame post -->
+      <geom name="frame_right" type="box" size="0.03 0.03 0.95" pos="0 0.4 0.95" 
+            material="door_frame_mat"/>
+      <!-- Top frame -->
+      <geom name="frame_top" type="box" size="0.03 0.43 0.03" pos="0 0.0 1.9" 
+            material="door_frame_mat"/>
+
+      <!-- Door panel (hinged on the left side) -->
+      <body name="door_panel" pos="0 -0.37 0.0">
+        <joint name="door_hinge" type="hinge" axis="0 0 1" pos="0 0 0"
+               range="0 1.5708" damping="2.0" frictionloss="0.5"/>
+        <geom name="door_surface" type="box" size="0.02 0.37 0.93" pos="0 0.37 0.93"
+              material="door_panel_mat" mass="8.0"/>
+
+        <!-- Handle assembly (on the right side of the door, at ~1.0m height) -->
+        <body name="handle_base" pos="0.025 0.68 0.95">
+          <!-- Handle backplate -->
+          <geom name="handle_plate" type="box" size="0.008 0.02 0.04" 
+                material="handle_mat"/>
+          
+          <!-- Lever handle (rotates down when pressed) -->
+          <body name="handle_lever" pos="0 0 0">
+            <joint name="handle_joint" type="hinge" axis="0 1 0" pos="0 0 0"
+                   range="0 0.7854" damping="0.3" stiffness="2.0"/>
+            <!-- Horizontal part of lever -->
+            <geom name="handle_grip" type="capsule" size="0.01" 
+                  fromto="0 0 0 0.08 0 0" material="handle_mat"/>
+            <!-- Slight downward curve at end -->
+            <geom name="handle_end" type="sphere" size="0.012" pos="0.08 0 0"
+                  material="handle_mat"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

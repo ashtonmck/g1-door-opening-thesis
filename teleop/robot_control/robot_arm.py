@@ -15,7 +15,7 @@ import logging_mp
 logger_mp = logging_mp.getLogger(__name__)
 
 kTopicLowCommand_Debug  = "rt/lowcmd"
-kTopicLowCommand_Motion = "rt/arm_sdk"
+kTopicLowCommand_Debug = "rt/arm_sdk"
 kTopicLowState = "rt/lowstate"
 
 G1_29_Num_Motors = 35
@@ -81,7 +81,7 @@ class G1_29_ArmController:
         self._gradual_time = None
 
         if self.motion_mode:
-            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Motion, hg_LowCmd)
+            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         else:
             self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         self.lowcmd_publisher.Init()
@@ -178,6 +178,7 @@ class G1_29_ArmController:
                 self.msg.motor_cmd[id].tau = arm_tauff_target[idx]   
 
             self.msg.crc = self.crc.Crc(self.msg)
+            import os; print(f"ARM WRITE PID={os.getpid()}: j15={self.msg.motor_cmd[15].q:.3f}")
             self.lowcmd_publisher.Write(self.msg)
 
             if self._speed_gradual_max is True:
@@ -364,7 +365,7 @@ class G1_23_ArmController:
 
         
         if self.motion_mode:
-            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Motion, hg_LowCmd)
+            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         else:
             self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         self.lowcmd_publisher.Init()
@@ -461,6 +462,7 @@ class G1_23_ArmController:
                 self.msg.motor_cmd[id].tau = arm_tauff_target[idx]      
 
             self.msg.crc = self.crc.Crc(self.msg)
+            import os; print(f"ARM WRITE PID={os.getpid()}: j15={self.msg.motor_cmd[15].q:.3f}")
             self.lowcmd_publisher.Write(self.msg)
 
             if self._speed_gradual_max is True:
@@ -639,7 +641,7 @@ class H1_2_ArmController:
 
 
         if self.motion_mode:
-            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Motion, hg_LowCmd)
+            self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         else:
             self.lowcmd_publisher = ChannelPublisher(kTopicLowCommand_Debug, hg_LowCmd)
         self.lowcmd_publisher.Init()
@@ -736,6 +738,7 @@ class H1_2_ArmController:
                 self.msg.motor_cmd[id].tau = arm_tauff_target[idx]      
 
             self.msg.crc = self.crc.Crc(self.msg)
+            import os; print(f"ARM WRITE PID={os.getpid()}: j15={self.msg.motor_cmd[15].q:.3f}")
             self.lowcmd_publisher.Write(self.msg)
 
             if self._speed_gradual_max is True:
@@ -1002,6 +1005,7 @@ class H1_ArmController:
                 self.msg.motor_cmd[id].tau = arm_tauff_target[idx]      
 
             self.msg.crc = self.crc.Crc(self.msg)
+            import os; print(f"ARM WRITE PID={os.getpid()}: j15={self.msg.motor_cmd[15].q:.3f}")
             self.lowcmd_publisher.Write(self.msg)
 
             if self._speed_gradual_max is True:

@@ -131,8 +131,8 @@ class RerunLogger:
                         column_shares=[1, 1],
                         row_shares=[1, 1], 
         )
-        views.append(rr.blueprint.SelectionPanel(state=rrb.PanelState.Collapsed))
-        views.append(rr.blueprint.TimePanel(state=rrb.PanelState.Collapsed))
+        #views.append(rr.blueprint.SelectionPanel(state=rrb.PanelState.Collapsed))
+        #views.append(rr.blueprint.TimePanel(state=rrb.PanelState.Collapsed))
         rr.send_blueprint(grid)
 
 

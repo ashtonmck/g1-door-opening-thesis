@@ -170,6 +170,14 @@ class EpisodeWriter():
         if colors:
             for idx_color, (color_key, color) in enumerate(colors.items()):
                 color_name = f'{str(idx).zfill(6)}_{color_key}.jpg'
+                import numpy as np
+                if not isinstance(color, np.ndarray):
+                    if hasattr(color, 'bgr') and color.bgr is not None:
+                        color = color.bgr
+                    elif hasattr(color, 'rgb') and color.rgb is not None:
+                        color = color.rgb
+                    elif hasattr(color, 'data') and color.data is not None:
+                        color = color.data
                 if not cv2.imwrite(os.path.join(self.color_dir, color_name), color):
                     logger_mp.info(f"Failed to save color image.")
                 item_data['colors'][color_key] = os.path.join('colors', color_name)

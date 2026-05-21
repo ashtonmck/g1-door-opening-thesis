@@ -84,7 +84,10 @@ class Dex3_1_Controller:
         self.subscribe_state_thread.start()
 
         while True:
-            if any(self.left_hand_state_array) and any(self.right_hand_state_array):
+            if self.left_hand_state_array[0] is not None and self.right_hand_state_array[0] is not None:
+                break
+            # Also break if we received any message (zeros are valid at rest)
+            if hasattr(self, '_hand_state_received') and self._hand_state_received:
                 break
             time.sleep(0.01)
             logger_mp.warning("[Dex3_1_Controller] Waiting to subscribe dds...")
@@ -108,6 +111,7 @@ class Dex3_1_Controller:
                 # Update right hand state
                 for idx, id in enumerate(Dex3_1_Right_JointIndex):
                     self.right_hand_state_array[idx] = right_hand_msg.motor_state[id].q
+                self._hand_received = True
             time.sleep(0.002)
     
     class _RIS_Mode:

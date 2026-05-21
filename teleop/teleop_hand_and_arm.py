@@ -21,6 +21,7 @@ from teleop.utils.episode_writer import EpisodeWriter
 from teleop.utils.ipc import IPC_Server
 from teleop.utils.motion_switcher import MotionSwitcher, LocoClientWrapper
 from sshkeyboard import listen_keyboard, stop_listening
+from arm_shm_bridge import ArmShmWriter
 
 # for simulation
 from unitree_sdk2py.core.channel import ChannelPublisher
@@ -147,6 +148,7 @@ if __name__ == '__main__':
         if args.arm == "G1_29":
             arm_ik = G1_29_ArmIK()
             arm_ctrl = G1_29_ArmController(motion_mode=args.motion, simulation_mode=args.sim)
+            arm_shm_writer = ArmShmWriter() if args.sim else None
         elif args.arm == "G1_23":
             arm_ik = G1_23_ArmIK()
             arm_ctrl = G1_23_ArmController(motion_mode=args.motion, simulation_mode=args.sim)
@@ -285,7 +287,9 @@ if __name__ == '__main__':
                     recorder.save_episode()
                     if args.sim:
                         publish_reset_category(1, reset_pose_publisher)
-
+                        if arm_shm_writer is not None:
+                            arm_shm_writer.request_reset()
+                            time.sleep(0.5)
             # get xr's tele data
             tele_data = tv_wrapper.get_tele_data()
             if (args.ee == "dex3" or args.ee == "inspire_dfx" or args.ee == "inspire_ftp" or args.ee == "brainco") and args.input_mode == "hand":
@@ -330,6 +334,8 @@ if __name__ == '__main__':
             time_ik_end = time.time()
             logger_mp.debug(f"ik:\t{round(time_ik_end - time_ik_start, 6)}")
             arm_ctrl.ctrl_dual_arm(sol_q, sol_tauff)
+            if arm_shm_writer is not None:
+                arm_shm_writer.write(sol_q, sol_tauff)
 
             # record data
             if args.record:
@@ -528,4 +534,9 @@ if __name__ == '__main__':
         except Exception as e:
             logger_mp.error(f"Failed to close recorder: {e}")
         logger_mp.info("✅ Finally, exiting program.")
+        try:
+            if arm_shm_writer is not None:
+                arm_shm_writer.close()
+        except Exception as e:
+            logger_mp.error(f"Failed to close arm shm writer: {e}")
         exit(0)
